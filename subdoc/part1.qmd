@@ -62,7 +62,7 @@ summary(model_high)
 
 ```
 
-**Interpretation of the results:** \n Here we can see that as the level of random noise increases, the estimates of the slope and intercept become less accurate, and the R² value decreases. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.Also by looking the residual errors we can see that the residuals become more spread out as the level of random noise increases, indicating that the model is less able to capture the underlying relationship between the independent and dependent variables.
+**Interpretation of the results:**  Here we can see that as the level of random noise increases, the estimates of the slope and intercept become less accurate, and the R² value decreases. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.Also by looking the residual errors we can see that the residuals become more spread out as the level of random noise increases, indicating that the model is less able to capture the underlying relationship between the independent and dependent variables.
 
 The value of each residual is almost(because of randomness) identical to the value of the noise added to the dependent variable. This is because the residuals represent the difference between the observed values and the predicted values, and as the level of random noise increases, the observed values become more variable, leading to larger residuals.
 ##Visual analysis
