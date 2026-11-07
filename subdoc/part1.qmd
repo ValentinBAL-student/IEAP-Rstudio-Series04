@@ -263,3 +263,52 @@ summary_results <- aggregate(
 print(summary_results)
 ```
 As seen before, the coefficients of the linear regression model are slightly affected by the level of random noise. As the noise level increases, and the R² value decreases meaning tthat the model's ability to explain the variance in the dependent variable deteriorates. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.
+
+```{r}
+
+par(mfrow = c(1,1))
+
+plot(summary_results$Noise,
+     summary_results$Slope,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean Slope",
+     main = "Slope estimate")
+
+abline(h = true_slope,
+       col = "red",
+       lty = 2)
+
+plot(summary_results$Noise,
+     summary_results$Intercept,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean Intercept",
+     main = "Intercept estimate")
+
+abline(h = true_intercept,
+       col = "red",
+       lty = 2)
+
+plot(summary_results$Noise,
+     summary_results$R2,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean R²",
+     main = "Effect on R²")
+
+plot(summary_results$Noise,
+     summary_results$RSE,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean RSE",
+     main = "Effect on RSE")
+```
+**Interpretation:**
+The slope and intercept estimates remain very close to their theoretical values (-2 and 5) across all noise levels, indicating that the linear regression model provides stable and approximately unbiased estimates of the underlying relationship. In contrast, the R² value decreases rapidly as noise increases, showing that a smaller proportion of the variability in the data is explained by the model. At the same time, the Residual Standard Error (RSE) increases almost proportionally to the noise level, indicating larger prediction errors and a greater dispersion of observations around the regression line. Therefore, increasing noise does not substantially affect the estimated coefficients but significantly reduces both the explanatory power and the predictive accuracy of the model.
+
+
