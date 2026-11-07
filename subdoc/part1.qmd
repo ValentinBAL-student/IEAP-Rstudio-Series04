@@ -4,8 +4,8 @@ date: "2024-06-12"
 format: pdf
 ---
 
-#How does random noise affect linear regression? \
-## 1. **Expectation when the level of random noise increase:**
+#How does random noise affect linear regression?\
+\## 1. **Expectation when the level of random noise increase:**
 
 We expect that as the level of random noise increases, the quality of the predictions of the slope and intercept will decrease. This is because random noise introduces variability in the data that is not explained by the model, leading to less accurate predictions.
 
@@ -44,6 +44,9 @@ data_high <- data.frame(x, y=y_high)
 # Analysis of data sets
 
 ```{r}
+#| message: true
+#| warning: false
+#| include: false
 #setting up linear regression models for each dataset
 model_low <- lm(y ~ x, data=data_low)
 model_medium <- lm(y ~ x, data=data_medium)
@@ -51,9 +54,14 @@ model_high <- lm(y ~ x, data=data_high)
 ```
 
 ```{r}
+#| paged-print: true
 # summarizing the results of each model
 summary(model_low)
 summary(model_medium)
 summary(model_high)
 
 ```
+
+**Interpretation of the results:** \n Here we can see that as the level of random noise increases, the estimates of the slope and intercept become less accurate, and the R² value decreases. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.Also by looking the residual errors we can see that the residuals become more spread out as the level of random noise increases, indicating that the model is less able to capture the underlying relationship between the independent and dependent variables.
+
+The value of each residual is almost(because of randomness) identical to the value of the noise added to the dependent variable. This is because the residuals represent the difference between the observed values and the predicted values, and as the level of random noise increases, the observed values become more variable, leading to larger residuals.
