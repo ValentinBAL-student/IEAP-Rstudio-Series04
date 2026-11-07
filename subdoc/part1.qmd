@@ -39,3 +39,21 @@ y_high <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=20)
 data_low <- data.frame(x, y=y_low)
 data_medium <- data.frame(x, y=y_medium)
 data_high <- data.frame(x, y=y_high)
+```
+
+# Analysis of data sets
+
+```{r}
+#setting up linear regression models for each dataset
+model_low <- lm(y ~ x, data=data_low)
+model_medium <- lm(y ~ x, data=data_medium)
+model_high <- lm(y ~ x, data=data_high)
+```
+
+```{r}
+# summarizing the results of each model
+summary(model_low)
+summary(model_medium)
+summary(model_high)
+
+```
