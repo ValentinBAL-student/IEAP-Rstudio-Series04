@@ -1,5 +1,18 @@
 ---
 title: "part1"
-format: html
+date: "2024-06-12"
+format: pdf
 ---
 
+#How does random noise affect linear regression? \
+## 1. **Expectation when the level of random noise increase:**
+
+We expect that as the level of random noise increases, the quality of the predictions of the slope and intercept will decrease. This is because random noise introduces variability in the data that is not explained by the model, leading to less accurate predictions.
+
+Prediction will lose accuracy as the level of random noise increases, resulting in a decrease of reliability of our model. This is because the model will be less able to capture the underlying relationship between the independent and dependent variables .
+
+The amount of explained variance will decrease as the level of random noise increases, leading to a decrease in the R-squared value. This is because the model will be less able to explain the variability in the dependent variable, resulting in a lower proportion of variance explained by the model.
+
+**Will the estimated linear relationships remain identical?**
+
+The relationships between the independent and dependent variables will remain the same, but the estimates of the slope and intercept will become less accurate as the level of random noise increases.
