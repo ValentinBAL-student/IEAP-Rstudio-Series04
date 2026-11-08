@@ -33,3 +33,157 @@ The mathematical modelling study by Kumar et al. describes heart rate recovery f
 The literature suggests that heart rate recovery is a complex process involving multiple physiological mechanisms.Therefore, a simple model may not always adequately describe the entire recovery period.
 
 The mathematical model proposed by Kumar et al. used multiple components and concluded that post-exercise heart rate recovery followed a bi-exponential decay pattern. This suggests that different phases of recovery may require a more complex model when the data show evidence of multiple recovery processes.
+
+# 1. Reusable Functions for Model Fitting
+
+In this section, reusable functions are created to fit the three different models. This makes the analysis more organized and allows the same functions to be reused for other datasets.
+
+```{r}
+
+# FUNCTION 1: Fit a linear model
+
+# This function fits a simple linear relationship between
+# heart rate (value) and time (time_min).
+
+fit_linear <- function(data) {
+  
+  lm(
+    value ~ time_min,
+    data = data
+  )
+}
+
+
+# FUNCTION 2: Fit a mono-exponential model
+
+# This function fits a mono-exponential recovery model:
+#
+# value = C + A * exp(-k * time_min)
+#
+# C = final/asymptotic value
+# A = amplitude of the recovery
+# k = recovery rate constant
+
+fit_mono <- function(data) {
+  
+  # Starting value for C:
+  # Use the minimum observed heart rate
+  C_start <- min(data$value)
+  
+  # Starting value for A:
+  # Difference between maximum and minimum heart rate
+  A_start <- max(data$value) - C_start
+  
+  # Fit the mono-exponential model
+  nls(
+    value ~ C + A * exp(-k * time_min),
+    data = data,
+    start = list(
+      C = C_start,
+      A = A_start,
+      k = 0.02
+    )
+  )
+}
+
+# FUNCTION 3: Fit a bi-exponential model
+
+# This function fits a bi-exponential recovery model:
+#
+# value = C +
+#         A1 * exp(-k1 * time_min) +
+#         A2 * exp(-k2 * time_min)
+#
+# The model contains two exponential components, allowing
+# for a fast and a slow recovery process.
+
+fit_bi <- function(data) {
+  
+  # Starting value for C
+  C_start <- min(data$value)
+  
+  # Calculate the range of heart rate values
+  range_hr <- max(data$value) - C_start
+  
+  # Fit the bi-exponential model
+  nls(
+    value ~ C +
+      A1 * exp(-k1 * time_min) +
+      A2 * exp(-k2 * time_min),
+    data = data,
+    start = list(
+      C = C_start,
+      A1 = range_hr / 2,
+      k1 = 0.03,
+      A2 = range_hr / 2,
+      k2 = 0.005
+    )
+  )
+}
+
+# FUNCTION 4: Compare models and plot residuals
+
+# This function:
+# 1. Calculates RMSE for each model
+# 2. Calculates AIC and BIC
+# 3. Creates residual plots for all models
+# 4. Returns a comparison table
+
+compare_models <- function(...) {
+  
+  # Store all models
+  models <- list(...)
+  
+
+# Create model comparison table
+  
+  
+  comparison <- data.frame(
+    Model = names(models),
+    
+    RMSE = sapply(
+      models,
+      function(model) sqrt(mean(residuals(model)^2))
+    ),
+    
+    AIC = sapply(models, AIC),
+    
+    BIC = sapply(models, BIC)
+  )
+  
+  # Print the comparison table
+  print(comparison)
+  
+  
+# Create residual plots
+  
+  # Arrange plots in one row
+  par(mfrow = c(1, length(models)))
+  
+  # Create one residual plot for each model
+  for (n in names(models)) {
+    
+    plot(
+      resid(models[[n]]),
+      pch = 16,
+      cex = 0.4,
+      main = paste(n, "Model"),
+      xlab = "Observation",
+      ylab = "Residual (bpm)"
+    )
+    
+    # Add a horizontal reference line at zero
+    abline(
+      h = 0,
+      col = "red"
+    )
+  }
+  
+  # Reset the plotting area
+  par(mfrow = c(1, 1))
+  
+  
+  # Return the comparison table
+  return(comparison)
+}
+```
