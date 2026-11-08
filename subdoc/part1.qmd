@@ -1,5 +1,315 @@
 ---
 title: "part1"
-format: html
+date: "2024-06-12"
+format: pdf
 ---
+
+#How does random noise affect linear regression?\
+## 1. **Expectation when the level of random noise increase:**
+
+We expect that as the level of random noise increases, the quality of the predictions of the slope and intercept will decrease. This is because random noise introduces variability in the data that is not explained by the model, leading to less accurate predictions.
+
+Prediction will lose accuracy as the level of random noise increases, resulting in a decrease of reliability of our model. This is because the model will be less able to capture the underlying relationship between the independent and dependent variables .
+
+The amount of explained variance will decrease as the level of random noise increases, leading to a decrease in the R-squared value. This is because the model will be less able to explain the variability in the dependent variable, resulting in a lower proportion of variance explained by the model.
+
+**Will the estimated linear relationships remain identical?**
+
+The relationships between the independent and dependent variables will remain the same, but the estimates of the slope and intercept will become less accurate as the level of random noise increases.
+
+##2. Implement and investigate
+
+### Creating 3 datasets
+
+```{r generating 3 datasets with different levels of random noise}
+set.seed(42) # to make results reproducible
+
+# creating 3 dataset  x with
+x <- seq(0, 10, length.out = 100)
+
+# known slope and intercept 
+true_slope <- 5
+true_intercept <- -2
+
+# 3 levels of random noise: low(0.5), medium(4), high(20)
+y_low <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=0.5)
+y_medium <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=4)
+y_high <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=20)
+
+data_low <- data.frame(x, y=y_low)
+data_medium <- data.frame(x, y=y_medium)
+data_high <- data.frame(x, y=y_high)
+```
+
+# Analysis of data sets
+## Numerical analysis
+```{r}
+#| message: true
+#| warning: false
+#| include: false
+#setting up linear regression models for each dataset
+model_low <- lm(y ~ x, data=data_low)
+model_medium <- lm(y ~ x, data=data_medium)
+model_high <- lm(y ~ x, data=data_high)
+```
+
+```{r}
+#| paged-print: true
+# summarizing the results of each model
+summary(model_low)
+summary(model_medium)
+summary(model_high)
+
+```
+
+**Interpretation of the results:**  Here we can see that as the level of random noise increases, the estimates of the slope and intercept become less accurate, and the R² value decreases. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.Also by looking the residual errors we can see that the residuals become more spread out as the level of random noise increases, indicating that the model is less able to capture the underlying relationship between the independent and dependent variables.
+
+The value of each residual is almost(because of randomness) identical to the value of the noise added to the dependent variable. This is because the residuals represent the difference between the observed values and the predicted values, and as the level of random noise increases, the observed values become more variable, leading to larger residuals.
+
+##Visual analysis
+```{r}
+#| label: Plot the model
+#| echo: false
+
+par(mfrow = c(1,3))  # Set up a 1x3 plotting area
+
+# ==========================
+# Low noise
+# ==========================
+
+plot(y ~ x,
+     data = data_low,
+     main = "Low noise",
+     pch = 16)
+
+# Regression line
+abline(model_low,
+       col = "red",
+       lwd = 2)
+
+# Theoretical model
+abline(a = -2,
+       b = 5,
+       col = "blue",
+       lwd = 2,
+       lty = 2)
+
+eq_low <- paste0(
+  "y = ",
+  round(coef(model_low)[2], 3),
+  "x ",
+  ifelse(coef(model_low)[1] >= 0, "+ ", "- "),
+  abs(round(coef(model_low)[1], 3))
+)
+
+legend("topleft",
+       legend = c(
+         eq_low,
+         paste("R² =", round(summary(model_low)$r.squared, 3)),
+         "Estimated model",
+         "Theoretical model"
+       ),
+       col = c(NA, NA, "red", "blue"),
+       lty = c(NA, NA, 1, 2),
+       lwd = c(NA, NA, 2, 2),
+       bty = "n")
+
+# ==========================
+# Medium noise
+# ==========================
+
+plot(y ~ x,
+     data = data_medium,
+     main = "Medium noise",
+     pch = 16)
+
+abline(model_medium,
+       col = "red",
+       lwd = 2)
+
+abline(a = -2,
+       b = 5,
+       col = "blue",
+       lwd = 2,
+       lty = 2)
+
+eq_medium <- paste0(
+  "y = ",
+  round(coef(model_medium)[2], 3),
+  "x ",
+  ifelse(coef(model_medium)[1] >= 0, "+ ", "- "),
+  abs(round(coef(model_medium)[1], 3))
+)
+
+legend("topleft",
+       legend = c(
+         eq_medium,
+         paste("R² =", round(summary(model_medium)$r.squared, 3)),
+         "Estimated model",
+         "Theoretical model"
+       ),
+       col = c(NA, NA, "red", "blue"),
+       lty = c(NA, NA, 1, 2),
+       lwd = c(NA, NA, 2, 2),
+       bty = "n")
+
+# ==========================
+# High noise
+# ==========================
+
+plot(y ~ x,
+     data = data_high,
+     main = "High noise",
+     pch = 16)
+
+abline(model_high,
+       col = "red",
+       lwd = 2)
+
+abline(a = -2,
+       b = 5,
+       col = "blue",
+       lwd = 2,
+       lty = 2)
+
+eq_high <- paste0(
+  "y = ",
+  round(coef(model_high)[2], 3),
+  "x ",
+  ifelse(coef(model_high)[1] >= 0, "+ ", "- "),
+  abs(round(coef(model_high)[1], 3))
+)
+
+legend("topleft",
+       legend = c(
+         eq_high,
+         paste("R² =", round(summary(model_high)$r.squared, 3)),
+         "Estimated model",
+         "Theoretical model"
+       ),
+       col = c(NA, NA, "red", "blue"),
+       lty = c(NA, NA, 1, 2),
+       lwd = c(NA, NA, 2, 2),
+       bty = "n")
+
+```
+**Interpretation**:The graphical comparison shows that increasing the level of random noise leads to a greater dispersion of the data points around the regression line. While the fitted regression line remains close to the theoretical relationship, the quality of the fit decreases as illustrated by the reduction in R² values.
+
+#To improve the experiment 
+We will increase the size of the dataset, for each level of random noise, to see how the performance of the linear regression. We will also use a different random seed to generate new datasets, to see if the results are consistent across different random samples.
+
+Below is the code to generate new(100) datasets of 10000 observations with 20 differents noises levels(1-20):
+```{r}
+set.seed(42)
+
+# Known slope and intercept
+true_slope <- -2
+true_intercept <- 5
+
+# Number of observations
+n <- 10000
+
+# stocking  in a vector
+x <- seq(0, 10, length.out = n)
+
+# Niveaux de bruit testés
+noise_levels <- seq(1, 20, by = 1)
+
+# Nombre de répétitions
+n_sim <- 100
+
+# Dataframe to stock
+results <- data.frame()
+
+#loop through each noise level and perform linear regression
+for (noise in noise_levels) {
+
+  for (i in 1:n_sim) {
+
+    # generating data with random noise
+    y <- true_intercept +
+         true_slope * x +
+         rnorm(n, mean = 0, sd = noise)
+
+    # Regression
+    model <- lm(y ~ x)
+
+    # statistics of the model
+    intercept <- coef(model)[1]
+    slope <- coef(model)[2]
+
+    r2 <- summary(model)$r.squared
+    rse <- summary(model)$sigma
+
+    results <- rbind(
+      results,
+      data.frame(
+        Noise = noise,
+        Intercept = intercept,
+        Slope = slope,
+        R2 = r2,
+        RSE = rse
+      )
+    )
+  }
+}
+
+# Results summary
+summary_results <- aggregate(
+  cbind(Intercept, Slope, R2, RSE) ~ Noise,
+  data = results,
+  FUN = mean
+)
+
+print(summary_results)
+```
+As seen before, the coefficients of the linear regression model are slightly affected by the level of random noise. As the noise level increases, and the R² value decreases meaning tthat the model's ability to explain the variance in the dependent variable deteriorates. This confirms our expectation that random noise negatively affects the quality of linear regression predictions.
+
+```{r}
+
+par(mfrow = c(2,2)) # Set up a 2x2 plotting area
+
+plot(summary_results$Noise,
+     summary_results$Slope,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean Slope",
+     main = "Slope estimate")
+
+abline(h = true_slope,
+       col = "red",
+       lty = 2)
+
+plot(summary_results$Noise,
+     summary_results$Intercept,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean Intercept",
+     main = "Intercept estimate")
+
+abline(h = true_intercept,
+       col = "red",
+       lty = 2)
+
+plot(summary_results$Noise,
+     summary_results$R2,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean R²",
+     main = "Effect on R²")
+
+plot(summary_results$Noise,
+     summary_results$RSE,
+     type = "b",
+     pch = 19,
+     xlab = "Noise SD",
+     ylab = "Mean RSE",
+     main = "Effect on RSE")
+```
+**Interpretation:**
+The slope and intercept estimates remain very close to their theoretical values (-2 and 5) across all noise levels, indicating that the linear regression model provides stable and approximately unbiased estimates of the underlying relationship. In contrast, the R² value decreases rapidly as noise increases, showing that a smaller proportion of the variability in the data is explained by the model. At the same time, the Residual Standard Error (RSE) increases almost proportionally to the noise level, indicating larger prediction errors and a greater dispersion of observations around the regression line. Therefore, increasing noise does not substantially affect the estimated coefficients but significantly reduces both the explanatory power and the predictive accuracy of the model.
+
 
