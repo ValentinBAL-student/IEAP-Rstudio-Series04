@@ -328,3 +328,71 @@ plot(
 )
 
 ```
+
+# Fit the models on dataset 2
+```{r}
+# Fit the linear model
+linear_model_2 <- fit_linear(pulse_2)
+
+# Fit the mono-exponential model
+mono_model_2 <- fit_mono(pulse_2)
+
+fit_bi <- function(data) {
+  
+  # Starting value for the final heart rate
+  C_start <- min(data$value)
+  
+  # Total range of heart rate values
+  range_hr <- max(data$value) - C_start
+  
+  # Fit the bi-exponential model using improved starting values
+  nls(
+    value ~ C +
+      A1 * exp(-k1 * time_min) +
+      A2 * exp(-k2 * time_min),
+    
+    data = data,
+    
+    start = list(
+      C = C_start,
+      A1 = range_hr * 0.7,
+      k1 = 1,
+      A2 = range_hr * 0.3,
+      k2 = 0.1
+    ),
+    
+    control = nls.control(
+      maxiter = 500,
+      warnOnly = TRUE
+    )
+  )
+}
+```
+
+```{r}
+linear_model_2 <- fit_linear(pulse_2)
+
+mono_model_2 <- fit_mono(pulse_2)
+
+bi_model_2 <- fit_bi(pulse_2)
+```
+
+```{r}
+# Summaries of the fitted models on dataset 2
+summary(linear_model_2)
+
+summary(mono_model_2)
+
+summary(bi_model_2)
+```
+
+```{r}
+# Compare the two successfully fitted models
+
+comparison_2 <- compare_models(
+  Linear = linear_model_2,
+  Mono = mono_model_2
+)
+
+comparison_2
+```
