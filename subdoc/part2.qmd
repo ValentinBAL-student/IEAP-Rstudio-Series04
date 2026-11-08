@@ -1,0 +1,618 @@
+---
+title: "Heart Rate Recovery Model Analysis"
+format: pdf
+editor: visual
+---
+
+# Finding a Mathematical Model for Heart Rate Recovery After Exercise
+
+## 1. Predictions from Scientific Literature
+
+### 1.1 Mathematical Models of Heart Rate Recovery
+
+Heart rate recovery is primarily modeled using mono-exponential or bi-exponential decay equations that capture the distinct fast and slow phases of parasympathetic reactivation and sympathetic withdrawal.
+
+More advanced approaches can be Exponential-Sinusoidal Hybrid Models or ODE-based models to track fluctuations during post-exercise recovery.
+
+### 1.2 Physiological Mechanisms of Heart Rate Recovery
+
+It is done by autonomic nervous system.
+
+-   Parasympathetic reactivation: After exercise, the parasympathetic nervous system is reactivated, leading to a rapid decrease in heart rate. This phase is characterized by a fast initial drop in heart rate. The sudden termination of central command and muscle mechanoreceptor stimulation triggers the vagus nerve to rapidly release acetylcholine, slowing down the sinoatrial node.
+
+-   Sympathetic withdrawal: During exercise, the sympathetic nervous system increases heart rate to meet the body's increased demand for oxygen and energy. After exercise stops, sympathetic stimulation gradually decreases. This reduction in sympathetic activity contributes to a slower and more gradual decline in heart rate during the later phase of recovery.
+
+### 1.3 Expected Characteristics of the Recovery Curve
+
+Heart rate recovery is expected to follow a non-linear decay pattern rather than a constant linear decrease. The recovery curve is influenced by different physiological mechanisms, which do not necessarily occur at the same rate. The initial phase is expected to show a relatively rapid decrease in heart rate, while the later phase may show a slower and more gradual decrease as heart rate approaches its resting level.
+
+The mathematical modelling study by Kumar et al. describes heart rate recovery following maximal exercise as a bi-exponential decay process, with different components representing sympathetic decay and parasympathetic reactivation. The model also includes a damped sinusoidal component associated with baroreflex regulation. Therefore, the recovery curve may contain different phases and may not follow a simple, uniform pattern throughout the entire recovery period.
+
+### 1.4 Is One Mathematical Model Sufficient for the Entire Recovery Period?
+
+The literature suggests that heart rate recovery is a complex process involving multiple physiological mechanisms.Therefore, a simple model may not always adequately describe the entire recovery period.
+
+The mathematical model proposed by Kumar et al. used multiple components and concluded that post-exercise heart rate recovery followed a bi-exponential decay pattern. This suggests that different phases of recovery may require a more complex model when the data show evidence of multiple recovery processes.
+
+# 1. Reusable Functions for Model Fitting
+
+In this section, reusable functions are created to fit the three different models. This makes the analysis more organized and allows the same functions to be reused for other datasets.
+
+```{r}
+
+# FUNCTION 1: Fit a linear model
+
+# This function fits a simple linear relationship between
+# heart rate (value) and time (time_min).
+
+fit_linear <- function(data) {
+  
+  lm(
+    value ~ time_min,
+    data = data
+  )
+}
+
+
+# FUNCTION 2: Fit a mono-exponential model
+
+# This function fits a mono-exponential recovery model:
+#
+# value = C + A * exp(-k * time_min)
+#
+# C = final/asymptotic value
+# A = amplitude of the recovery
+# k = recovery rate constant
+
+fit_mono <- function(data) {
+  
+  # Starting value for C:
+  # Use the minimum observed heart rate
+  C_start <- min(data$value)
+  
+  # Starting value for A:
+  # Difference between maximum and minimum heart rate
+  A_start <- max(data$value) - C_start
+  
+  # Fit the mono-exponential model
+  nls(
+    value ~ C + A * exp(-k * time_min),
+    data = data,
+    start = list(
+      C = C_start,
+      A = A_start,
+      k = 0.02
+    )
+  )
+}
+
+# FUNCTION 3: Fit a bi-exponential model
+
+# This function fits a bi-exponential recovery model:
+#
+# value = C +
+#         A1 * exp(-k1 * time_min) +
+#         A2 * exp(-k2 * time_min)
+#
+# The model contains two exponential components, allowing
+# for a fast and a slow recovery process.
+
+fit_bi <- function(data) {
+  
+  # Starting value for C
+  C_start <- min(data$value)
+  
+  # Calculate the range of heart rate values
+  range_hr <- max(data$value) - C_start
+  
+  # Fit the bi-exponential model
+  nls(
+    value ~ C +
+      A1 * exp(-k1 * time_min) +
+      A2 * exp(-k2 * time_min),
+    data = data,
+    start = list(
+      C = C_start,
+      A1 = range_hr / 2,
+      k1 = 0.03,
+      A2 = range_hr / 2,
+      k2 = 0.005
+    )
+  )
+}
+
+# FUNCTION 4: Compare models and plot residuals
+
+# This function:
+# 1. Calculates RMSE for each model
+# 2. Calculates AIC and BIC
+# 3. Creates residual plots for all models
+# 4. Returns a comparison table
+
+compare_models <- function(...) {
+  
+  # Store all models
+  models <- list(...)
+  
+
+# Create model comparison table
+  
+  
+  comparison <- data.frame(
+    Model = names(models),
+    
+    RMSE = sapply(
+      models,
+      function(model) sqrt(mean(residuals(model)^2))
+    ),
+    
+    AIC = sapply(models, AIC),
+    
+    BIC = sapply(models, BIC)
+  )
+  
+  # Print the comparison table
+  print(comparison)
+  
+  
+# Create residual plots
+  
+  # Arrange plots in one row
+  par(mfrow = c(1, length(models)))
+  
+  # Create one residual plot for each model
+  for (n in names(models)) {
+    
+    plot(
+      resid(models[[n]]),
+      pch = 16,
+      cex = 0.4,
+      main = paste(n, "Model"),
+      xlab = "Observation",
+      ylab = "Residual (bpm)"
+    )
+    
+    # Add a horizontal reference line at zero
+    abline(
+      h = 0,
+      col = "red"
+    )
+  }
+  
+  # Reset the plotting area
+  par(mfrow = c(1, 1))
+  
+  
+  # Return the comparison table
+  return(comparison)
+}
+```
+
+# 2. Data Exploration and Preparation
+
+## 2.1 Import the Heart Rate Data
+
+The heart rate dataset is imported and its structure is examined before fitting the models.
+
+```{r}
+  # Load the heart rate dataset
+pulse <- read.csv(
+  "../datasets_2026-09-25_cardio_recovery_3h10m/pulse.csv"
+)
+
+# Display the first rows of the dataset
+head(pulse)
+
+
+# Check the structure and variable types
+str(pulse)
+```
+
+## 2.2 Create Elapsed Time in Minutes
+
+The timestamps are converted into elapsed time in minutes. The first observation is used as the starting point.
+
+```{r}
+# Convert timestamps to elapsed time in minutes
+pulse$time_min <- (
+  pulse$timestamp - pulse$timestamp[1]
+) / 60000
+
+
+# Check the first rows of the updated dataset
+head(pulse)
+```
+## Identification of Exercise and Recovery Periods
+
+Heart rate was visualised as a function of time to examine the temporal pattern of the recording.
+```{r}
+# Plot heart rate against time
+plot(
+  pulse$time_min,
+  pulse$value,
+  type = "l",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Heart Rate During the Complete Recording"
+)
+
+# Divide the recording into 10-minute intervals
+
+pulse$interval <- cut(
+  pulse$time_min,
+  breaks = seq(
+    0,
+    ceiling(max(pulse$time_min) / 10) * 10,
+    by = 10
+  ),
+  include.lowest = TRUE
+)
+
+# Calculate the mean heart rate for each interval
+
+interval_means <- aggregate(
+  value ~ interval,
+  data = pulse,
+  FUN = mean
+)
+
+# Display the mean heart rate for each interval
+
+interval_means
+```
+The recording shows a decrease in heart rate over time, which is consistent with the post-exercise recovery process. The highest heart rate values occur at the beginning of the recording, followed by a relatively rapid decrease and then a slower decline.
+
+The mean heart rate values calculated across successive 10-minute intervals further help to describe the overall temporal trend. Based on these observations, the analysed recording was considered to represent the post-exercise recovery period and was subsequently used for mathematical model fitting.
+
+# 3. Fit the Three Models
+
+The linear, mono-exponential, and bi-exponential models are fitted using the reusable functions created above.
+
+```{r}
+# Fit the linear model
+
+linear_model <- fit_linear(pulse)
+
+# Fit the mono-exponential model
+
+mono_model <- fit_mono(pulse)
+
+# Fit the bi-exponential model
+
+bi_model <- fit_bi(pulse)
+```
+
+# 4. Model Summaries
+
+The summaries provide the estimated parameters and information about the quality of each fitted model.
+
+```{r}
+# Summary of the linear model
+summary(linear_model)
+```
+
+```{r}
+# Summary of the mono-exponential model
+summary(mono_model)
+```
+
+```{r}
+# Summary of the bi-exponential model
+summary(bi_model)
+``` 
+# 5. Model Comparison and Residual Analysis
+
+The three models are compared using:
+
+-   RMSE (Root Mean Square Error)
+-   AIC (Akaike Information Criterion)
+-   BIC (Bayesian Information Criterion)
+
+Residual plots are also generated to visually examine how well each model describes the data.
+
+```{r}
+# Compare all three fitted models
+comparison_1 <- compare_models(
+  Linear = linear_model,
+  Mono = mono_model,
+  Bi = bi_model
+)
+
+# Display the comparison table
+comparison_1
+```
+```{r}
+# VISUALISATION: Dataset 1 - Comparison of Fitted Models
+
+# Create predicted values for each model
+pulse$pred_linear <- predict(linear_model)
+pulse$pred_mono <- predict(mono_model)
+pulse$pred_bi <- predict(bi_model)
+
+
+# Plot the observed heart rate data
+plot(
+  pulse$time_min,
+  pulse$value,
+  pch = 16,
+  cex = 0.3,
+  col = "grey",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Dataset 1: Comparison of Fitted Models"
+)
+
+
+# Add the linear model
+lines(
+  pulse$time_min,
+  pulse$pred_linear,
+  col = "blue",
+  lwd = 2
+)
+
+
+# Add the mono-exponential model
+lines(
+  pulse$time_min,
+  pulse$pred_mono,
+  col = "red",
+  lwd = 2
+)
+
+
+# Add the bi-exponential model
+lines(
+  pulse$time_min,
+  pulse$pred_bi,
+  col = "darkgreen",
+  lwd = 2
+)
+
+
+# Add a legend to identify the models on the top right corner
+legend(
+  "topright",
+  legend = c(
+    "Observed Data",
+    "Linear Model",
+    "Mono-exponential Model",
+    "Bi-exponential Model"
+  ),
+  col = c("grey", "blue", "red", "darkgreen"),
+  pch = c(16, NA, NA, NA),
+  lty = c(NA, 1, 1, 1),
+  lwd = c(NA, 2, 2, 2),
+  bty = "n"
+)
+```
+
+# 6. Interpretation of the Results
+
+The linear model showed systematic residual structure, indicating that a simple linear relationship does not adequately describe the heart rate recovery pattern.
+
+The mono-exponential model substantially improved the fit compared with the linear model. It produced a lower RMSE and lower information criterion values, while using fewer parameters than the bi-exponential model.
+
+The bi-exponential model produced only a small additional improvement in RMSE compared with the mono-exponential model, despite having more parameters. Therefore, the mono-exponential model provides a simpler and more defensible description of the heart rate recovery data.
+
+
+# Load the second heart rate recovery dataset
+```{r}
+# Load Dataset 2
+pulse_2 <- read.csv(
+  "../datasets_2026-09-27_cardio_recovery_7m30s/pulse.csv"
+)
+
+# Look at the first rows
+head(pulse_2)
+
+# Check the structure
+str(pulse_2)
+
+```
+
+```{r}
+# Convert timestamps to elapsed time in minutes
+pulse_2$time_min <- 
+  (pulse_2$timestamp - pulse_2$timestamp[1]) / 60000
+
+# Check the data
+head(pulse_2)
+```
+## Identification of Exercise and Recovery Periods
+
+Heart rate was plotted against time to identify the temporal pattern of the recording.
+```{r}
+# Plot heart rate against time to visualise the recovery pattern
+plot(
+  pulse_2$time_min,
+  pulse_2$value,
+  pch = 16,
+  cex = 0.6,
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Heart Rate Recovery - Dataset 2"
+)
+
+```
+The heart rate was highest at the beginning of the recording and decreased over time. This decreasing pattern is consistent with post-exercise heart rate recovery. Therefore, the available recording was treated as the post-exercise recovery period and used for mathematical model fitting.
+# Fit the models on dataset 2
+```{r}
+# Fit the linear model
+linear_model_2 <- fit_linear(pulse_2)
+
+# Fit the mono-exponential model
+mono_model_2 <- fit_mono(pulse_2)
+  
+# Adapt the bi-exponential model for Dataset 2
+
+# The original bi-exponential function did not converge reliably
+# for Dataset 2 using the previous starting values.
+# Therefore, the function is redefined below with starting values
+# adapted to the characteristics of Dataset 2. These starting values
+# are calculated directly from the observed heart rate values.
+
+fit_bi <- function(data) {
+  
+  # Starting value for the final heart rate
+  # Use the minimum observed heart rate as an initial estimate
+  C_start <- min(data$value)
+  
+  # Calculate the total range of heart rate values
+  # This is used to generate starting estimates for A1 and A2
+  range_hr <- max(data$value) - C_start
+  
+  # Fit the bi-exponential model using improved starting values
+  nls(
+    value ~ C +
+      A1 * exp(-k1 * time_min) +
+      A2 * exp(-k2 * time_min),
+    
+    data = data,
+    
+    # Starting values adapted to Dataset 2
+    start = list(
+      C = C_start,
+      A1 = range_hr * 0.7,
+      k1 = 1,
+      A2 = range_hr * 0.3,
+      k2 = 0.1
+    ),
+    
+    # Increase the maximum number of iterations
+    # and return a warning instead of stopping immediately
+    control = nls.control(
+      maxiter = 500,
+      warnOnly = TRUE
+    )
+  )
+}
+```
+
+```{r}
+linear_model_2 <- fit_linear(pulse_2)
+
+mono_model_2 <- fit_mono(pulse_2)
+
+bi_model_2 <- fit_bi(pulse_2)
+```
+
+```{r}
+# Summaries of the fitted models on dataset 2
+summary(linear_model_2)
+
+summary(mono_model_2)
+
+summary(bi_model_2)
+```
+
+```{r}
+# Compare the two successfully fitted models
+
+comparison_2 <- compare_models(
+  Linear = linear_model_2,
+  Mono = mono_model_2
+)
+
+comparison_2
+```
+```{r}
+# VISUALISATION: Dataset 2 - Comparison of Fitted Models
+
+# Create predicted values for each successfully fitted model
+pulse_2$pred_linear <- predict(linear_model_2)
+pulse_2$pred_mono <- predict(mono_model_2)
+
+
+# Add extra space on the right for the legend
+par(mar = c(5, 4, 4, 9), xpd = TRUE)
+
+
+# Plot the observed heart rate data
+plot(
+  pulse_2$time_min,
+  pulse_2$value,
+  pch = 16,
+  cex = 0.7,
+  col = "grey",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Dataset 2: Comparison of Fitted Models"
+)
+
+
+# Add the fitted linear model
+lines(
+  pulse_2$time_min,
+  pulse_2$pred_linear,
+  col = "blue",
+  lwd = 2
+)
+
+
+# Add the fitted mono-exponential model
+lines(
+  pulse_2$time_min,
+  pulse_2$pred_mono,
+  col = "red",
+  lwd = 2
+)
+
+
+# Add a clean legend on the top right side of the plot
+legend(
+  "topright",
+  inset = c(-0.25, 0),
+  legend = c(
+    "Observed Data",
+    "Linear Model",
+    "Mono-exponential Model"
+  ),
+  col = c("grey", "blue", "red"),
+  pch = c(16, NA, NA),
+  lty = c(NA, 1, 1),
+  lwd = c(NA, 2, 2),
+  bty = "n"
+)
+
+```
+
+### Model Comparison and Residual Analysis
+
+For Dataset 2, the mono-exponential model provided a better fit than the linear model. The RMSE decreased from 4.70 bpm for the linear model to 3.27 bpm for the mono-exponential model. The mono-exponential model also had substantially lower AIC (481.68 vs 545.77) and BIC (491.73 vs 553.30).
+
+The residual plot of the linear model showed a more systematic pattern, whereas the residuals of the mono-exponential model were more evenly distributed around zero. A bi-exponential model was also tested, but it did not converge reliably and showed poorly identified parameters. Therefore, it was not considered a reliable model for this dataset.
+
+Overall, the mono-exponential model provides the most appropriate and parsimonious description of heart rate recovery in Dataset 2.
+
+```{r}
+# Overall comparison of the selected models
+
+overall_comparison <- data.frame(
+  
+  Dataset = c("Dataset 1", "Dataset 2"),
+  
+  Best_Model = c(
+    "Mono-exponential",
+    "Mono-exponential"
+  ),
+  
+  RMSE = c(
+    comparison_1$RMSE[comparison_1$Model == "Mono"],
+    comparison_2$RMSE[comparison_2$Model == "Mono"]
+  )
+)
+
+overall_comparison
+
+```
+
+## Overall Conclusion
+
+Three models were considered to describe heart rate recovery: a linear model, a mono-exponential model, and a bi-exponential model.
+
+For Dataset 1, the linear model showed systematic residual structure, indicating that a simple linear relationship was not appropriate for describing the recovery process. The mono-exponential model substantially improved the fit compared with the linear model. Although the bi-exponential model produced a slightly lower RMSE and lower AIC and BIC values, the improvement in RMSE was very small and its parameters were poorly identified. Therefore, the mono-exponential model was considered the most appropriate and parsimonious model for Dataset 1.
+
+For Dataset 2, the mono-exponential model also provided a substantially better fit than the linear model, with lower RMSE, AIC, and BIC values. The bi-exponential model was tested but did not converge reliably and therefore could not be considered a reliable description of the data.
+
+Overall, the results suggest that heart rate recovery in both datasets is better described by an exponential decay than by a linear model. The mono-exponential model provides a good balance between goodness of fit, parameter reliability, and model simplicity. Therefore, it was selected as the most appropriate model for both datasets.

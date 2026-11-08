@@ -5,3 +5,15 @@ format: markdown
 
 
 {{< include subdoc/part1.qmd >}}
+{{< include subdoc/part2.qmd >}}
+
+# References
+
+- Kumar et al. *A Mathematical Model for Predicting Post-Exercise Heart Rate Recovery.*  
+  https://www.researchgate.net/publication/375532347_A_mathematical_model_for_predicting_post-exercise_heart_rate_recovery
+
+- *A Mathematical Model for Predicting Post-Exercise Heart Rate Recovery.* Research Square.  
+  https://www.researchsquare.com/article/rs-3566170/v1
+
+- Navarro, Dissertation on physiological mechanisms of heart rate recovery. University of Connecticut.  
+  https://archives.lib.uconn.edu/_flysystem/repo-bin/2024-09/Navarro_Dissertation_F.pdf
