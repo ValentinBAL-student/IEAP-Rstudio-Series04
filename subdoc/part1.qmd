@@ -31,7 +31,7 @@ x <- seq(0, 10, length.out = 100)
 true_slope <- 5
 true_intercept <- -2
 
-# 3 levels of random noise: low(0.5), medium(4), high(10)
+# 3 levels of random noise: low(0.5), medium(4), high(20)
 y_low <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=0.5)
 y_medium <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=4)
 y_high <- true_intercept + true_slope*x + rnorm(100, mean=0, sd=20)
