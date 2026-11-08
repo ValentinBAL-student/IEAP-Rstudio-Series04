@@ -200,7 +200,6 @@ pulse <- read.csv(
   "../datasets_2026-09-25_cardio_recovery_3h10m/pulse.csv"
 )
 
-
 # Display the first rows of the dataset
 head(pulse)
 
@@ -336,13 +335,23 @@ linear_model_2 <- fit_linear(pulse_2)
 
 # Fit the mono-exponential model
 mono_model_2 <- fit_mono(pulse_2)
+  
+# Adapt the bi-exponential model for Dataset 2
+
+# The original bi-exponential function did not converge reliably
+# for Dataset 2 using the previous starting values.
+# Therefore, the function is redefined below with starting values
+# adapted to the characteristics of Dataset 2. These starting values
+# are calculated directly from the observed heart rate values.
 
 fit_bi <- function(data) {
   
   # Starting value for the final heart rate
+  # Use the minimum observed heart rate as an initial estimate
   C_start <- min(data$value)
   
-  # Total range of heart rate values
+  # Calculate the total range of heart rate values
+  # This is used to generate starting estimates for A1 and A2
   range_hr <- max(data$value) - C_start
   
   # Fit the bi-exponential model using improved starting values
@@ -353,6 +362,7 @@ fit_bi <- function(data) {
     
     data = data,
     
+    # Starting values adapted to Dataset 2
     start = list(
       C = C_start,
       A1 = range_hr * 0.7,
@@ -361,6 +371,8 @@ fit_bi <- function(data) {
       k2 = 0.1
     ),
     
+    # Increase the maximum number of iterations
+    # and return a warning instead of stopping immediately
     control = nls.control(
       maxiter = 500,
       warnOnly = TRUE
