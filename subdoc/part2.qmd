@@ -260,3 +260,32 @@ summary(mono_model)
 # Summary of the bi-exponential model
 summary(bi_model)
 ``` 
+# 5. Model Comparison and Residual Analysis
+
+The three models are compared using:
+
+-   RMSE (Root Mean Square Error)
+-   AIC (Akaike Information Criterion)
+-   BIC (Bayesian Information Criterion)
+
+Residual plots are also generated to visually examine how well each model describes the data.
+
+```{r}
+# Compare all three fitted models
+comparison_1 <- compare_models(
+  Linear = linear_model,
+  Mono = mono_model,
+  Bi = bi_model
+)
+
+# Display the comparison table
+comparison_1
+```
+
+# 6. Interpretation of the Results
+
+The linear model showed systematic residual structure, indicating that a simple linear relationship does not adequately describe the heart rate recovery pattern.
+
+The mono-exponential model substantially improved the fit compared with the linear model. It produced a lower RMSE and lower information criterion values, while using fewer parameters than the bi-exponential model.
+
+The bi-exponential model produced only a small additional improvement in RMSE compared with the mono-exponential model, despite having more parameters. Therefore, the mono-exponential model provides a simpler and more defensible description of the heart rate recovery data.
