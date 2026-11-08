@@ -223,3 +223,29 @@ pulse$time_min <- (
 # Check the first rows of the updated dataset
 head(pulse)
 ```
+
+# 3. Fit the Three Models
+
+The linear, mono-exponential, and bi-exponential models are fitted using the reusable functions created above.
+
+```{r}
+# ============================================================
+# Fit the linear model
+# ============================================================
+
+linear_model <- fit_linear(pulse)
+
+
+# ============================================================
+# Fit the mono-exponential model
+# ============================================================
+
+mono_model <- fit_mono(pulse)
+
+
+# ============================================================
+# Fit the bi-exponential model
+# ============================================================
+
+bi_model <- fit_bi(pulse)
+```
