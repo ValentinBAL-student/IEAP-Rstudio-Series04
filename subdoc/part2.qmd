@@ -396,3 +396,10 @@ comparison_2 <- compare_models(
 
 comparison_2
 ```
+### Model Comparison and Residual Analysis
+
+For Dataset 2, the mono-exponential model provided a better fit than the linear model. The RMSE decreased from 4.70 bpm for the linear model to 3.27 bpm for the mono-exponential model. The mono-exponential model also had substantially lower AIC (481.68 vs 545.77) and BIC (491.73 vs 553.30).
+
+The residual plot of the linear model showed a more systematic pattern, whereas the residuals of the mono-exponential model were more evenly distributed around zero. A bi-exponential model was also tested, but it did not converge reliably and showed poorly identified parameters. Therefore, it was not considered a reliable model for this dataset.
+
+Overall, the mono-exponential model provides the most appropriate and parsimonious description of heart rate recovery in Dataset 2.
