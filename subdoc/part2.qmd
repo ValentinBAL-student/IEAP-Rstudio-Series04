@@ -1,0 +1,35 @@
+---
+title: "Heart Rate Recovery Model Analysis"
+format: pdf
+editor: visual
+---
+
+# Finding a Mathematical Model for Heart Rate Recovery After Exercise
+
+## 1. Predictions from Scientific Literature
+
+### 1.1 Mathematical Models of Heart Rate Recovery
+
+Heart rate recovery is primarily modeled using mono-exponential or bi-exponential decay equations that capture the distinct fast and slow phases of parasympathetic reactivation and sympathetic withdrawal.
+
+More advanced approaches can be Exponential-Sinusoidal Hybrid Models or ODE-based models to track fluctuations during post-exercise recovery.
+
+### 1.2 Physiological Mechanisms of Heart Rate Recovery
+
+It is done by autonomic nervous system.
+
+-   Parasympathetic reactivation: After exercise, the parasympathetic nervous system is reactivated, leading to a rapid decrease in heart rate. This phase is characterized by a fast initial drop in heart rate. The sudden termination of central command and muscle mechanoreceptor stimulation triggers the vagus nerve to rapidly release acetylcholine, slowing down the sinoatrial node.
+
+-   Sympathetic withdrawal: During exercise, the sympathetic nervous system increases heart rate to meet the body's increased demand for oxygen and energy. After exercise stops, sympathetic stimulation gradually decreases. This reduction in sympathetic activity contributes to a slower and more gradual decline in heart rate during the later phase of recovery.
+
+### 1.3 Expected Characteristics of the Recovery Curve
+
+Heart rate recovery is expected to follow a non-linear decay pattern rather than a constant linear decrease. The recovery curve is influenced by different physiological mechanisms, which do not necessarily occur at the same rate. The initial phase is expected to show a relatively rapid decrease in heart rate, while the later phase may show a slower and more gradual decrease as heart rate approaches its resting level.
+
+The mathematical modelling study by Kumar et al. describes heart rate recovery following maximal exercise as a bi-exponential decay process, with different components representing sympathetic decay and parasympathetic reactivation. The model also includes a damped sinusoidal component associated with baroreflex regulation. Therefore, the recovery curve may contain different phases and may not follow a simple, uniform pattern throughout the entire recovery period.
+
+### 1.4 Is One Mathematical Model Sufficient for the Entire Recovery Period?
+
+The literature suggests that heart rate recovery is a complex process involving multiple physiological mechanisms.Therefore, a simple model may not always adequately describe the entire recovery period.
+
+The mathematical model proposed by Kumar et al. used multiple components and concluded that post-exercise heart rate recovery followed a bi-exponential decay pattern. This suggests that different phases of recovery may require a more complex model when the data show evidence of multiple recovery processes.
