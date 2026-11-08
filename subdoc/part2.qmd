@@ -222,6 +222,47 @@ pulse$time_min <- (
 # Check the first rows of the updated dataset
 head(pulse)
 ```
+## Identification of Exercise and Recovery Periods
+
+Heart rate was visualised as a function of time to examine the temporal pattern of the recording.
+```{r}
+# Plot heart rate against time
+plot(
+  pulse$time_min,
+  pulse$value,
+  type = "l",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Heart Rate During the Complete Recording"
+)
+
+# Divide the recording into 10-minute intervals
+
+pulse$interval <- cut(
+  pulse$time_min,
+  breaks = seq(
+    0,
+    ceiling(max(pulse$time_min) / 10) * 10,
+    by = 10
+  ),
+  include.lowest = TRUE
+)
+
+# Calculate the mean heart rate for each interval
+
+interval_means <- aggregate(
+  value ~ interval,
+  data = pulse,
+  FUN = mean
+)
+
+# Display the mean heart rate for each interval
+
+interval_means
+```
+The recording shows a decrease in heart rate over time, which is consistent with the post-exercise recovery process. The highest heart rate values occur at the beginning of the recording, followed by a relatively rapid decrease and then a slower decline.
+
+The mean heart rate values calculated across successive 10-minute intervals further help to describe the overall temporal trend. Based on these observations, the analysed recording was considered to represent the post-exercise recovery period and was subsequently used for mathematical model fitting.
 
 # 3. Fit the Three Models
 
@@ -280,6 +321,71 @@ comparison_1 <- compare_models(
 # Display the comparison table
 comparison_1
 ```
+```{r}
+# VISUALISATION: Dataset 1 - Comparison of Fitted Models
+
+# Create predicted values for each model
+pulse$pred_linear <- predict(linear_model)
+pulse$pred_mono <- predict(mono_model)
+pulse$pred_bi <- predict(bi_model)
+
+
+# Plot the observed heart rate data
+plot(
+  pulse$time_min,
+  pulse$value,
+  pch = 16,
+  cex = 0.3,
+  col = "grey",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Dataset 1: Comparison of Fitted Models"
+)
+
+
+# Add the linear model
+lines(
+  pulse$time_min,
+  pulse$pred_linear,
+  col = "blue",
+  lwd = 2
+)
+
+
+# Add the mono-exponential model
+lines(
+  pulse$time_min,
+  pulse$pred_mono,
+  col = "red",
+  lwd = 2
+)
+
+
+# Add the bi-exponential model
+lines(
+  pulse$time_min,
+  pulse$pred_bi,
+  col = "darkgreen",
+  lwd = 2
+)
+
+
+# Add a legend to identify the models on the top right corner
+legend(
+  "topright",
+  legend = c(
+    "Observed Data",
+    "Linear Model",
+    "Mono-exponential Model",
+    "Bi-exponential Model"
+  ),
+  col = c("grey", "blue", "red", "darkgreen"),
+  pch = c(16, NA, NA, NA),
+  lty = c(NA, 1, 1, 1),
+  lwd = c(NA, 2, 2, 2),
+  bty = "n"
+)
+```
 
 # 6. Interpretation of the Results
 
@@ -313,9 +419,11 @@ pulse_2$time_min <-
 # Check the data
 head(pulse_2)
 ```
+## Identification of Exercise and Recovery Periods
 
+Heart rate was plotted against time to identify the temporal pattern of the recording.
 ```{r}
-# Plot heart rate against time
+# Plot heart rate against time to visualise the recovery pattern
 plot(
   pulse_2$time_min,
   pulse_2$value,
@@ -327,7 +435,7 @@ plot(
 )
 
 ```
-
+The heart rate was highest at the beginning of the recording and decreased over time. This decreasing pattern is consistent with post-exercise heart rate recovery. Therefore, the available recording was treated as the post-exercise recovery period and used for mathematical model fitting.
 # Fit the models on dataset 2
 ```{r}
 # Fit the linear model
@@ -408,6 +516,67 @@ comparison_2 <- compare_models(
 
 comparison_2
 ```
+```{r}
+# VISUALISATION: Dataset 2 - Comparison of Fitted Models
+
+# Create predicted values for each successfully fitted model
+pulse_2$pred_linear <- predict(linear_model_2)
+pulse_2$pred_mono <- predict(mono_model_2)
+
+
+# Add extra space on the right for the legend
+par(mar = c(5, 4, 4, 9), xpd = TRUE)
+
+
+# Plot the observed heart rate data
+plot(
+  pulse_2$time_min,
+  pulse_2$value,
+  pch = 16,
+  cex = 0.7,
+  col = "grey",
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Dataset 2: Comparison of Fitted Models"
+)
+
+
+# Add the fitted linear model
+lines(
+  pulse_2$time_min,
+  pulse_2$pred_linear,
+  col = "blue",
+  lwd = 2
+)
+
+
+# Add the fitted mono-exponential model
+lines(
+  pulse_2$time_min,
+  pulse_2$pred_mono,
+  col = "red",
+  lwd = 2
+)
+
+
+# Add a clean legend on the top right side of the plot
+legend(
+  "topright",
+  inset = c(-0.25, 0),
+  legend = c(
+    "Observed Data",
+    "Linear Model",
+    "Mono-exponential Model"
+  ),
+  col = c("grey", "blue", "red"),
+  pch = c(16, NA, NA),
+  lty = c(NA, 1, 1),
+  lwd = c(NA, 2, 2),
+  bty = "n"
+)
+
+```
+
 ### Model Comparison and Residual Analysis
 
 For Dataset 2, the mono-exponential model provided a better fit than the linear model. The RMSE decreased from 4.70 bpm for the linear model to 3.27 bpm for the mono-exponential model. The mono-exponential model also had substantially lower AIC (481.68 vs 545.77) and BIC (491.73 vs 553.30).
