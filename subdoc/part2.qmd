@@ -289,3 +289,42 @@ The linear model showed systematic residual structure, indicating that a simple 
 The mono-exponential model substantially improved the fit compared with the linear model. It produced a lower RMSE and lower information criterion values, while using fewer parameters than the bi-exponential model.
 
 The bi-exponential model produced only a small additional improvement in RMSE compared with the mono-exponential model, despite having more parameters. Therefore, the mono-exponential model provides a simpler and more defensible description of the heart rate recovery data.
+
+
+# Load the second heart rate recovery dataset
+```{r}
+# Load Dataset 2
+pulse_2 <- read.csv(
+  "../datasets_2026-09-27_cardio_recovery_7m30s/pulse.csv"
+)
+
+# Look at the first rows
+head(pulse_2)
+
+# Check the structure
+str(pulse_2)
+
+```
+
+```{r}
+# Convert timestamps to elapsed time in minutes
+pulse_2$time_min <- 
+  (pulse_2$timestamp - pulse_2$timestamp[1]) / 60000
+
+# Check the data
+head(pulse_2)
+```
+
+```{r}
+# Plot heart rate against time
+plot(
+  pulse_2$time_min,
+  pulse_2$value,
+  pch = 16,
+  cex = 0.6,
+  xlab = "Time (minutes)",
+  ylab = "Heart rate (bpm)",
+  main = "Heart Rate Recovery - Dataset 2"
+)
+
+```
