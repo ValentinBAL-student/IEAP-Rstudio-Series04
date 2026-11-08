@@ -1,6 +1,6 @@
 ---
 title: "Master-document"
-format: pdf
+format: markdown
 ---
 
 
