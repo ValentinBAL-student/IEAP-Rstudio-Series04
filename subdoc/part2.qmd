@@ -403,3 +403,35 @@ For Dataset 2, the mono-exponential model provided a better fit than the linear 
 The residual plot of the linear model showed a more systematic pattern, whereas the residuals of the mono-exponential model were more evenly distributed around zero. A bi-exponential model was also tested, but it did not converge reliably and showed poorly identified parameters. Therefore, it was not considered a reliable model for this dataset.
 
 Overall, the mono-exponential model provides the most appropriate and parsimonious description of heart rate recovery in Dataset 2.
+
+```{r}
+# Overall comparison of the selected models
+
+overall_comparison <- data.frame(
+  
+  Dataset = c("Dataset 1", "Dataset 2"),
+  
+  Best_Model = c(
+    "Mono-exponential",
+    "Mono-exponential"
+  ),
+  
+  RMSE = c(
+    comparison_1$RMSE[comparison_1$Model == "Mono"],
+    comparison_2$RMSE[comparison_2$Model == "Mono"]
+  )
+)
+
+overall_comparison
+
+```
+
+## Overall Conclusion
+
+Three models were considered to describe heart rate recovery: a linear model, a mono-exponential model, and a bi-exponential model.
+
+For Dataset 1, the linear model showed systematic residual structure, indicating that a simple linear relationship was not appropriate for describing the recovery process. The mono-exponential model substantially improved the fit compared with the linear model. Although the bi-exponential model produced a slightly lower RMSE and lower AIC and BIC values, the improvement in RMSE was very small and its parameters were poorly identified. Therefore, the mono-exponential model was considered the most appropriate and parsimonious model for Dataset 1.
+
+For Dataset 2, the mono-exponential model also provided a substantially better fit than the linear model, with lower RMSE, AIC, and BIC values. The bi-exponential model was tested but did not converge reliably and therefore could not be considered a reliable description of the data.
+
+Overall, the results suggest that heart rate recovery in both datasets is better described by an exponential decay than by a linear model. The mono-exponential model provides a good balance between goodness of fit, parameter reliability, and model simplicity. Therefore, it was selected as the most appropriate model for both datasets.
