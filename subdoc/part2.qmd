@@ -229,23 +229,34 @@ head(pulse)
 The linear, mono-exponential, and bi-exponential models are fitted using the reusable functions created above.
 
 ```{r}
-# ============================================================
 # Fit the linear model
-# ============================================================
 
 linear_model <- fit_linear(pulse)
 
-
-# ============================================================
 # Fit the mono-exponential model
-# ============================================================
 
 mono_model <- fit_mono(pulse)
 
-
-# ============================================================
 # Fit the bi-exponential model
-# ============================================================
 
 bi_model <- fit_bi(pulse)
 ```
+
+# 4. Model Summaries
+
+The summaries provide the estimated parameters and information about the quality of each fitted model.
+
+```{r}
+# Summary of the linear model
+summary(linear_model)
+```
+
+```{r}
+# Summary of the mono-exponential model
+summary(mono_model)
+```
+
+```{r}
+# Summary of the bi-exponential model
+summary(bi_model)
+``` 
