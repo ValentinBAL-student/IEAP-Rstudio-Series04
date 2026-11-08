@@ -187,3 +187,39 @@ compare_models <- function(...) {
   return(comparison)
 }
 ```
+
+# 2. Data Exploration and Preparation
+
+## 2.1 Import the Heart Rate Data
+
+The heart rate dataset is imported and its structure is examined before fitting the models.
+
+```{r}
+  # Load the heart rate dataset
+pulse <- read.csv(
+  "../datasets_2026-09-25_cardio_recovery_3h10m/pulse.csv"
+)
+
+
+# Display the first rows of the dataset
+head(pulse)
+
+
+# Check the structure and variable types
+str(pulse)
+```
+
+## 2.2 Create Elapsed Time in Minutes
+
+The timestamps are converted into elapsed time in minutes. The first observation is used as the starting point.
+
+```{r}
+# Convert timestamps to elapsed time in minutes
+pulse$time_min <- (
+  pulse$timestamp - pulse$timestamp[1]
+) / 60000
+
+
+# Check the first rows of the updated dataset
+head(pulse)
+```
