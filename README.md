@@ -12,7 +12,7 @@ This repository contains the code, data, analytical reports, and one-page synthe
 
 | Member | Primary Responsibilities & Contributions |
 | :--- | :--- |
-| **BALBINE Valentin** | **Task 2: Noise in Linear Regression**<br>• Designed synthetic datasets across 3 noise levels ($\sigma = 1, 4, 10$).<br>• Model fitting with `lm()`, parameter extraction ($\hat{\beta}, \text{SE}, R^2, \text{RMSE}$).<br>• Formulated prior expectations and proposed Monte Carlo protocol improvements. |
+| **BALBINE Valentin** | **Task 2: Noise in Linear Regression**<br>• Designed synthetic datasets across 3 noise levels ($\sigma = 1, 4, 20$).<br>• Model fitting with `lm()`, parameter extraction ($\hat{\beta}, \text{SE}, R^2, \text{RMSE}$).<br>• Formulated prior expectations and proposed Monte Carlo protocol improvements. |
 | **TUBA Tuba** | **Task 3: Heart Rate Recovery (HRR) Modeling**<br>• Literature review on autonomic physiological mechanisms (vagal vs. sympathetic phases).<br>• Data exploration and preprocessing of Aidlab telemetry (peak detection, $t=0$ cropping).<br>• Non-linear model fitting (Linear, Mono-exponential, Bi-exponential) via `nlsLM`. |
 | **LONG Jiangbin** | **Synthesis, Conclusions, Repository & PDF Report**<br>• Synthesized overall discussion and physiological parameter interpretation.<br>• Managed GitHub repository architecture, version control, and documentation.<br>• Designed and compiled the strict one-page critical reflection report using Quarto & Typst. |
 
