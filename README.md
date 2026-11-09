@@ -23,11 +23,10 @@ This repository contains the code, data, analytical reports, and one-page synthe
 ```text
 .
 ├── README.md                  # Project overview, team division, and documentation
-├── one_page_report.qmd        # Source code for the 1-page critical reflection (Typst PDF)
-├── one_page_report.pdf        # Compiled 1-page PDF document for final submission
-├── task2_noise_simulation/    # Scripts and analysis for Task 2 (Linear regression & noise)
-│   ├── task2_simulation.R    # Synthetic data generation and lm() model fitting
-│   └── task2_plots.png        # Comparative regression and residual plots
-├── task3_hr_recovery/         # Scripts and analysis for Task 3 (Aidlab HRR modeling)
-│   ├── task3_analysis.qmd     # Complete R code, nls fits, metrics table, and discussion
-│   └── data/                  # Aidlab physiological recordings (3-hour & 7.5-min datasets)
+├── Master-document.qmd        # The general .qmd that includes all works
+├── dataset                    # Aidlab physiological recordings (3-hour & 7.5-min datasets)
+├── subdoc    
+│   ├── part1.qmd              # Synthetic data generation and lm() model fitting
+│   └── part2.qmd              # Complete R code, nls fits, metrics table, and discussion
+│   └── PDF_series04_Rstudio.qmd        # Source code for the 1-page critical reflection (Typst PDF)
+│   └── PDF_series04_Rstudio.pdf        # Compiled 1-page PDF document for final submission
