@@ -616,15 +616,15 @@ overall_comparison
 
 ```
 
-## 3. Draw Conclusions and Discussion
+## Draw Conclusions and Discussion
 
-### 3.1 Comparison with Initial Predictions & Hypothesis Evaluation
+### Comparison with Initial Predictions & Hypothesis Evaluation
 
 In our initial literature review, we hypothesized that the bi-exponential model would best describe heart rate recovery due to dual-phase autonomic regulation (fast vagal reactivation followed by slow sympathetic withdrawal).
 
 Our experimental findings **partially refuted this initial hypothesis**: \* As hypothesized, the **linear model was decisively rejected** across both datasets due to severe systematic residual misspecification. \* Contrary to our expectation, the **bi-exponential model did not provide a practical advantage**: \* In **Dataset 2** (7.5-minute recording), the bi-exponential model suffered from severe parameter unidentifiability and failed to converge reliably. \* In **Dataset 1** (3-hour recording), although the bi-exponential model achieved slightly lower AIC (17161.64 vs 17179.38) and BIC (17196.48 vs 17202.61), the reduction in RMSE was clinically negligible—decreasing by only **0.035 bpm** (from 7.979 bpm to 7.944 bpm) at the expense of two poorly identified parameters. \* Consequently, the **mono-exponential decay model proved to be the most robust, identifiable, and parsimonious choice**.
 
-### 3.2 Model Comparison Across the Two Recordings
+### Model Comparison Across the Two Recordings
 
 Does the same mathematical model adequately describe both recordings? **Yes, the mono-exponential decay model (**$HR(t) = C + A \cdot e^{-k \cdot t}$) is the superior model for both datasets, though their fitted parameters reflect distinct physiological timeframes.
 
@@ -637,17 +637,17 @@ Does the same mathematical model adequately describe both recordings? **Yes, the
     - Fitted Parameters: Asymptote $C = 130.21 \pm 0.53$ bpm, Amplitude $A = 27.24 \pm 1.70$ bpm, and Decay Rate $k = 0.9231 \pm 0.1088 \text{ min}^{-1}$ ($p = 4.74 \times 10^{-13}$).
     - The bi-exponential model failed to converge, proving that over-parameterized models are ill-suited for brief telemetry windows.
 
-### 3.3 Evidence of Recovery Phases from Parameter Analysis
+### Evidence of Recovery Phases from Parameter Analysis
 
 Are there different recovery phases? **Yes, and the fitted decay rates (**$k$) provide compelling physiological evidence of these phases: \* **Fast Vagal Phase in Dataset 2:** The decay rate $k = 0.9231 \text{ min}^{-1}$ corresponds to a time constant of $\tau = 1/k \approx 1.08 \text{ minutes}$ ($\approx 65 \text{ seconds}$). This rapid decay aligns precisely with literature descriptions of **immediate parasympathetic (vagal) reactivation**, which causes a sharp drop in heart rate during the first 1–2 minutes post-exercise. Because the recording stopped at 7.5 minutes, the estimated baseline ($C \approx 130.2 \text{ bpm}$) represents the plateau of this initial fast drop rather than true resting state. \* **Slow Metabolic Phase in Dataset 1:** In contrast, Dataset 1 spans 3 full hours, yielding $k = 0.01357 \text{ min}^{-1}$ ($\tau \approx 73.7 \text{ minutes}$). This encapsulates the **slow recovery phase**, driven by gradual sympathetic withdrawal, body temperature normalization, and lactate/catecholamine clearance. Crucially, the estimated baseline ($C = 63.91 \text{ bpm}$) perfectly matches standard adult resting heart rate.
 
 Therefore, while both datasets obey mono-exponential decay mathematically, they capture **two distinct temporal phases** of the recovery process.
 
-### 3.4 Limitations of the Analysis
+### Limitations of the Analysis
 
 Several methodological limitations must be considered: 1. **Truncated Observation Windows:** Dataset 2 is too short (7.5 min) to capture the slow sympathetic phase, artificially elevating the baseline estimate $C$. 2. **Wearable Sensor Noise & Motion Artifacts:** Telemetry from Aidlab sensors inherently contains motion artifacts and respiratory sinus arrhythmia (RSA), introducing high-frequency noise that complicates bi-exponential optimization. 3. **Absence of Postural Context:** Heart rate recovery kinetics differ dramatically whether the subject is standing, seated, or supine post-exercise. The absence of postural metadata introduces unmodeled physiological variation. 4. **Optimization Sensitivity in NLS:** Non-linear least squares (`nls`) is sensitive to initial guesses (`start` values), making multi-parameter bi-exponential models vulnerable to singular gradients and local minima.
 
-### 3.5 Final Model Choice and Justification
+### Final Model Choice and Justification
 
 **Final Choice: The Mono-Exponential Decay Model.**
 
