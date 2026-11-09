@@ -18,9 +18,9 @@ More advanced approaches can be Exponential-Sinusoidal Hybrid Models or ODE-base
 
 It is done by autonomic nervous system.
 
--   Parasympathetic reactivation: After exercise, the parasympathetic nervous system is reactivated, leading to a rapid decrease in heart rate. This phase is characterized by a fast initial drop in heart rate. The sudden termination of central command and muscle mechanoreceptor stimulation triggers the vagus nerve to rapidly release acetylcholine, slowing down the sinoatrial node.
+- Parasympathetic reactivation: After exercise, the parasympathetic nervous system is reactivated, leading to a rapid decrease in heart rate. This phase is characterized by a fast initial drop in heart rate. The sudden termination of central command and muscle mechanoreceptor stimulation triggers the vagus nerve to rapidly release acetylcholine, slowing down the sinoatrial node.
 
--   Sympathetic withdrawal: During exercise, the sympathetic nervous system increases heart rate to meet the body's increased demand for oxygen and energy. After exercise stops, sympathetic stimulation gradually decreases. This reduction in sympathetic activity contributes to a slower and more gradual decline in heart rate during the later phase of recovery.
+- Sympathetic withdrawal: During exercise, the sympathetic nervous system increases heart rate to meet the body's increased demand for oxygen and energy. After exercise stops, sympathetic stimulation gradually decreases. This reduction in sympathetic activity contributes to a slower and more gradual decline in heart rate during the later phase of recovery.
 
 ### 1.3 Expected Characteristics of the Recovery Curve
 
@@ -222,9 +222,11 @@ pulse$time_min <- (
 # Check the first rows of the updated dataset
 head(pulse)
 ```
+
 ## Identification of Exercise and Recovery Periods
 
 Heart rate was visualised as a function of time to examine the temporal pattern of the recording.
+
 ```{r}
 # Plot heart rate against time
 plot(
@@ -260,6 +262,7 @@ interval_means <- aggregate(
 
 interval_means
 ```
+
 The recording shows a decrease in heart rate over time, which is consistent with the post-exercise recovery process. The highest heart rate values occur at the beginning of the recording, followed by a relatively rapid decrease and then a slower decline.
 
 The mean heart rate values calculated across successive 10-minute intervals further help to describe the overall temporal trend. Based on these observations, the analysed recording was considered to represent the post-exercise recovery period and was subsequently used for mathematical model fitting.
@@ -299,14 +302,15 @@ summary(mono_model)
 ```{r}
 # Summary of the bi-exponential model
 summary(bi_model)
-``` 
+```
+
 # 5. Model Comparison and Residual Analysis
 
 The three models are compared using:
 
--   RMSE (Root Mean Square Error)
--   AIC (Akaike Information Criterion)
--   BIC (Bayesian Information Criterion)
+- RMSE (Root Mean Square Error)
+- AIC (Akaike Information Criterion)
+- BIC (Bayesian Information Criterion)
 
 Residual plots are also generated to visually examine how well each model describes the data.
 
@@ -321,6 +325,7 @@ comparison_1 <- compare_models(
 # Display the comparison table
 comparison_1
 ```
+
 ```{r}
 # VISUALISATION: Dataset 1 - Comparison of Fitted Models
 
@@ -395,8 +400,8 @@ The mono-exponential model substantially improved the fit compared with the line
 
 The bi-exponential model produced only a small additional improvement in RMSE compared with the mono-exponential model, despite having more parameters. Therefore, the mono-exponential model provides a simpler and more defensible description of the heart rate recovery data.
 
-
 # Load the second heart rate recovery dataset
+
 ```{r}
 # Load Dataset 2
 pulse_2 <- read.csv(
@@ -419,9 +424,11 @@ pulse_2$time_min <-
 # Check the data
 head(pulse_2)
 ```
+
 ## Identification of Exercise and Recovery Periods
 
 Heart rate was plotted against time to identify the temporal pattern of the recording.
+
 ```{r}
 # Plot heart rate against time to visualise the recovery pattern
 plot(
@@ -435,8 +442,9 @@ plot(
 )
 
 ```
-The heart rate was highest at the beginning of the recording and decreased over time. This decreasing pattern is consistent with post-exercise heart rate recovery. Therefore, the available recording was treated as the post-exercise recovery period and used for mathematical model fitting.
-# Fit the models on dataset 2
+
+The heart rate was highest at the beginning of the recording and decreased over time. This decreasing pattern is consistent with post-exercise heart rate recovery. Therefore, the available recording was treated as the post-exercise recovery period and used for mathematical model fitting. \# Fit the models on dataset 2
+
 ```{r}
 # Fit the linear model
 linear_model_2 <- fit_linear(pulse_2)
@@ -516,6 +524,7 @@ comparison_2 <- compare_models(
 
 comparison_2
 ```
+
 ```{r}
 # VISUALISATION: Dataset 2 - Comparison of Fitted Models
 
@@ -607,12 +616,39 @@ overall_comparison
 
 ```
 
-## Overall Conclusion
+## Draw Conclusions and Discussion
 
-Three models were considered to describe heart rate recovery: a linear model, a mono-exponential model, and a bi-exponential model.
+### Comparison with Initial Predictions & Hypothesis Evaluation
 
-For Dataset 1, the linear model showed systematic residual structure, indicating that a simple linear relationship was not appropriate for describing the recovery process. The mono-exponential model substantially improved the fit compared with the linear model. Although the bi-exponential model produced a slightly lower RMSE and lower AIC and BIC values, the improvement in RMSE was very small and its parameters were poorly identified. Therefore, the mono-exponential model was considered the most appropriate and parsimonious model for Dataset 1.
+In our initial literature review, we hypothesized that the bi-exponential model would best describe heart rate recovery due to dual-phase autonomic regulation (fast vagal reactivation followed by slow sympathetic withdrawal).
 
-For Dataset 2, the mono-exponential model also provided a substantially better fit than the linear model, with lower RMSE, AIC, and BIC values. The bi-exponential model was tested but did not converge reliably and therefore could not be considered a reliable description of the data.
+Our experimental findings **partially refuted this initial hypothesis**: \* As hypothesized, the **linear model was decisively rejected** across both datasets due to severe systematic residual misspecification. \* Contrary to our expectation, the **bi-exponential model did not provide a practical advantage**: \* In **Dataset 2** (7.5-minute recording), the bi-exponential model suffered from severe parameter unidentifiability and failed to converge reliably. \* In **Dataset 1** (3-hour recording), although the bi-exponential model achieved slightly lower AIC (17161.64 vs 17179.38) and BIC (17196.48 vs 17202.61), the reduction in RMSE was clinically negligible—decreasing by only **0.035 bpm** (from 7.979 bpm to 7.944 bpm) at the expense of two poorly identified parameters. \* Consequently, the **mono-exponential decay model proved to be the most robust, identifiable, and parsimonious choice**.
 
-Overall, the results suggest that heart rate recovery in both datasets is better described by an exponential decay than by a linear model. The mono-exponential model provides a good balance between goodness of fit, parameter reliability, and model simplicity. Therefore, it was selected as the most appropriate model for both datasets.
+### Model Comparison Across the Two Recordings
+
+Does the same mathematical model adequately describe both recordings? **Yes, the mono-exponential decay model (**$HR(t) = C + A \cdot e^{-k \cdot t}$) is the superior model for both datasets, though their fitted parameters reflect distinct physiological timeframes.
+
+1.  **Dataset 1 (Long-Term, 3 Hours):**
+    - The linear model failed to capture the non-linear curvature (RMSE = 9.59 bpm, AIC = 18079.78, BIC = 18097.20).
+    - The mono-exponential model showed a massive improvement: RMSE decreased to **7.98 bpm**, and AIC/BIC dropped by over 890 points (AIC = 17179.38, BIC = 17202.61).
+    - Fitted Parameters: Baseline $C = 63.91 \pm 0.77$ bpm, Amplitude $A = 66.99 \pm 0.70$ bpm, and Decay Rate $k = 0.01357 \pm 0.00044 \text{ min}^{-1}$ ($p < 2 \times 10^{-16}$).
+2.  **Dataset 2 (Short-Term, 7.5 Minutes):**
+    - The mono-exponential model substantially outperformed the linear baseline: RMSE fell from **4.70 bpm to 3.27 bpm**, AIC dropped from **545.77 to 481.68**, and BIC from **553.30 to 491.73**.
+    - Fitted Parameters: Asymptote $C = 130.21 \pm 0.53$ bpm, Amplitude $A = 27.24 \pm 1.70$ bpm, and Decay Rate $k = 0.9231 \pm 0.1088 \text{ min}^{-1}$ ($p = 4.74 \times 10^{-13}$).
+    - The bi-exponential model failed to converge, proving that over-parameterized models are ill-suited for brief telemetry windows.
+
+### Evidence of Recovery Phases from Parameter Analysis
+
+Are there different recovery phases? **Yes, and the fitted decay rates (**$k$) provide compelling physiological evidence of these phases: \* **Fast Vagal Phase in Dataset 2:** The decay rate $k = 0.9231 \text{ min}^{-1}$ corresponds to a time constant of $\tau = 1/k \approx 1.08 \text{ minutes}$ ($\approx 65 \text{ seconds}$). This rapid decay aligns precisely with literature descriptions of **immediate parasympathetic (vagal) reactivation**, which causes a sharp drop in heart rate during the first 1–2 minutes post-exercise. Because the recording stopped at 7.5 minutes, the estimated baseline ($C \approx 130.2 \text{ bpm}$) represents the plateau of this initial fast drop rather than true resting state. \* **Slow Metabolic Phase in Dataset 1:** In contrast, Dataset 1 spans 3 full hours, yielding $k = 0.01357 \text{ min}^{-1}$ ($\tau \approx 73.7 \text{ minutes}$). This encapsulates the **slow recovery phase**, driven by gradual sympathetic withdrawal, body temperature normalization, and lactate/catecholamine clearance. Crucially, the estimated baseline ($C = 63.91 \text{ bpm}$) perfectly matches standard adult resting heart rate.
+
+Therefore, while both datasets obey mono-exponential decay mathematically, they capture **two distinct temporal phases** of the recovery process.
+
+### Limitations of the Analysis
+
+Several methodological limitations must be considered: 1. **Truncated Observation Windows:** Dataset 2 is too short (7.5 min) to capture the slow sympathetic phase, artificially elevating the baseline estimate $C$. 2. **Wearable Sensor Noise & Motion Artifacts:** Telemetry from Aidlab sensors inherently contains motion artifacts and respiratory sinus arrhythmia (RSA), introducing high-frequency noise that complicates bi-exponential optimization. 3. **Absence of Postural Context:** Heart rate recovery kinetics differ dramatically whether the subject is standing, seated, or supine post-exercise. The absence of postural metadata introduces unmodeled physiological variation. 4. **Optimization Sensitivity in NLS:** Non-linear least squares (`nls`) is sensitive to initial guesses (`start` values), making multi-parameter bi-exponential models vulnerable to singular gradients and local minima.
+
+### Final Model Choice and Justification
+
+**Final Choice: The Mono-Exponential Decay Model.**
+
+**Justification:** \* **Literature Compatibility:** While dual-phase physiology is undeniable, physiological modeling literature (e.g., Perini et al., Pierpont et al.) repeatedly emphasizes that mono-exponential models offer the highest parameter reliability, reproducibility, and statistical robustness in practical field measurements. \* **Empirical Parsimony:** Across both short and long datasets, the mono-exponential decay captures the fundamental nonlinear dynamics, resolves the systematic residual patterns of linear regression, avoids the convergence failures of bi-exponential fitting, and adheres to Occam’s razor by maximizing explanatory power per parameter.
