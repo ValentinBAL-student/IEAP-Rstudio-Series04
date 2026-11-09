@@ -617,3 +617,35 @@ overall_comparison
 ```
 
 ## Overall Conclusion
+
+### Comparison with Initial Predictions & Hypothesis Evaluation
+
+In our initial literature review, we hypothesized that the bi-exponential model would best describe post-exercise heart rate recovery due to the dual-phase physiological control (rapid parasympathetic reactivation followed by slow sympathetic withdrawal).
+
+However, our empirical data **partially refuted our initial hypothesis**: \* As expected, the **linear model was decisively rejected** across both recordings due to severe systematic residual misspecification. \* Contrary to our expectations, the **bi-exponential model did not provide a meaningful advantage in practice**: \* In Dataset 2 (7.5-minute recording), the bi-exponential model suffered from severe parameter unidentifiability and failed to converge reliably. \* In Dataset 1 (3-hour recording), although the bi-exponential model achieved slightly lower AIC (17161.64 vs 17179.38) and BIC (17196.48 vs 17202.61), the improvement in RMSE was clinically negligible—decreasing by only **0.035 bpm** (from 7.979 bpm to 7.944 bpm) at the cost of two additional poorly identified parameters. \* Therefore, the **mono-exponential decay model proved to be the most reliable and defensible choice**.
+
+### Model Performance Across the Two Recordings
+
+Does the same model adequately describe both recordings? **Yes, the mono-exponential decay model is the most appropriate model for both datasets.**
+
+1.  **Dataset 1 (Long-term, 3-hour recording):**
+    - The linear model failed to capture the non-linear curvature (RMSE = 9.59 bpm, AIC = 18079.78, BIC = 18097.20).
+    - The mono-exponential model substantially improved the fit, reducing the RMSE to **7.98 bpm** and lowering the AIC and BIC by over 890 points (AIC = 17179.38, BIC = 17202.61).
+    - Although the bi-exponential model marginally reduced the RMSE to 7.94 bpm, this 0.035 bpm difference represents numerical noise rather than a meaningful second recovery phase.
+2.  **Dataset 2 (Short-term, 7.5-minute recording):**
+    - The mono-exponential model again dramatically outperformed the linear baseline: RMSE dropped from **4.70 bpm to 3.27 bpm**, with AIC dropping from **545.77 to 481.68** and BIC from **553.30 to 491.73**.
+    - The bi-exponential model completely failed to converge, demonstrating that complex models are unsuitable for short-window wearable recordings.
+
+### Recovery Phases in the Empirical Data
+
+Are there different recovery phases? \* **In Dataset 2 (7.5 min):** The recording window captures almost exclusively the rapid vagal reactivation phase. Because the slow metabolic clearance phase has not yet unfolded, attempting to fit two distinct phases leads to severe over-parameterization. \* **In Dataset 1 (3 hours):** While physiological literature describes both fast and slow phases over a 3-hour span, sensor noise, breathing fluctuations (RSA), and baseline shifts in real telemetry obscure the mathematical boundary between these phases. Consequently, a single exponential decay accounts for the dominant recovery trajectory, rendering an additional exponential term practically redundant.
+
+### Limitations of the Analysis
+
+Several limitations must be acknowledged: 1. **Lack of Postural Information:** Heart rate recovery is highly sensitive to post-exercise posture (supine vs. seated vs. standing). The absence of posture logging introduces unmodeled physiological variation. 2. **Wearable Sensor Noise:** Telemetry from wearable devices inevitably contains motion artifacts and respiratory sinus arrhythmia, which blur subtle multi-phase transitions. 3. **Nonlinear Optimization Sensitivity:** The `nls` procedure is highly sensitive to starting parameter values (`start` list), making multi-parameter bi-exponential models prone to local minima and convergence failures.
+
+### Final Model Choice and Justification
+
+**Final Choice: The Mono-Exponential Decay Model.**
+
+**Justification:** \* **Literature Perspective:** While theoretical exercise physiology highlights dual autonomic mechanisms, empirical modeling literature consistently emphasizes that mono-exponential models offer superior parameter identifiability, clinical reproducibility, and robustness in field conditions. \* **Experimental Evidence:** Across both short and long recordings, the mono-exponential model successfully resolves the systematic residual patterns of linear regression, avoids the convergence instability and parameter indeterminacy of the bi-exponential model, and achieves the best balance between predictive accuracy and model parsimony (Occam's razor).
