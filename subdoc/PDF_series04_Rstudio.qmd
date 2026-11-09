@@ -1,0 +1,38 @@
+---
+title: "Critical Analysis: Noise Effects & Physiological Modeling"
+author:
+  - name: "Valentin BALBINE"
+  - name: "Jiangbin LONG"
+  - name: "Tuba TUBA"
+date: 8/11/2026
+format:
+  typst:
+    papersize: a4
+    fontsize: 9.5pt
+    mainfont: "Liberation Sans"
+---
+
+*Public Repository:* <https://github.com/ValentinBAL-student/IEAP-Rstudio-Series04>\
+
+*Team Contributions:* **Valentin BALBINE** (Task 2: Noise Simulation & Evaluation)
+
+**Tuba TUBA** (Task 3: Literature & Nonlinear Model Fitting)
+
+**Jiangbin LONG** (Synthesis, Repository Management & One-Page PDF Design).
+
+### 1. Task 2: Understanding Noise in Regression
+
+- **The Challenge:** In the high-noise dataset, the fitted slope drifted far away from our true slope. At first, this made us doubt whether the linear regression was working properly or if we had made an error in the code.
+- **How We Addressed It:** We revisited the statistical theory and realized that high noise simply inflates the standard error. The method is still unbiased on average, but a single run can just get "unlucky" due to random fluctuations.
+- **Lesson Learned:** A single simulation can easily mislead you. To truly observe statistical properties, we learned that running repeated simulations (like a Monte Carlo experiment) is necessary to see the full picture.
+
+### 2. Task 3: Tackling Heart Rate Recovery (HRR)
+
+- **The Challenge:** None of us had a background in physiology, so we did not understand how heart rate recovers after exercise. Moreover, we had never worked with linear regression before. When we first tried fitting the exponential models, the code kept failing to converge and threw errors.
+- **How We Addressed It:** We searched scientific literature to learn about the fast and slow phases of the nervous system. To solve the coding issues, we learned how to provide reasonable initial parameter guesses (`start` values) and compared the models using AIC and BIC.
+- **Lesson Learned:** Real-world data is much messier than theoretical equations. Even though scientific papers recommend complex bi-exponential models, we learned that a simpler mono-exponential model was much more stable and reliable for our noisy wearable datasets.
+
+### 3. Overall Lessons Learned
+
+- **Residuals Tell the Truth:** We initially relied only on $R^2$ and visual curves. However, checking the residual plots showed clear patterns that proved the linear model was wrong, teaching us that residual analysis is essential.
+- **Learning to Balance Theory and Practice:** The biggest takeaway from this assignment was discovering the gap between theory and practical data science. When models fail or data is noisy, keeping things simple (Occam's razor) is often the smartest choice.
